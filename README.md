@@ -1,9 +1,6 @@
-# CRUD_JWT
+# 📌 API JWT com Spring Boot
 
-
-# API JWT com Spring Boot
-
-API REST desenvolvida com autenticação e autorização via JWT, utilizando Spring Boot, Spring Security, H2, Swagger, Actuator e Docker.
+API REST com autenticação e autorização baseada em JWT (JSON Web Token), desenvolvida com Spring Boot. Possui endpoints protegidos por papéis (admin/user), documentação com Swagger, monitoramento com Spring Boot Actuator + Prometheus e deploy com Docker.
 
 ---
 
@@ -15,17 +12,18 @@ API REST desenvolvida com autenticação e autorização via JWT, utilizando Spr
 - Spring Data JPA  
 - H2 Database  
 - JWT (JSON Web Token)  
-- Swagger/OpenAPI  
+- Swagger / OpenAPI  
 - Spring Boot Actuator  
+- Prometheus  
 - Docker  
 
 ---
 
-## ⚙️ Requisitos
+## ⚙️ Pré-requisitos
 
 - Java 17 instalado  
 - Maven ou Wrapper (`mvnw`)  
-- Docker instalado
+- Docker instalado  
 
 ---
 
@@ -33,92 +31,110 @@ API REST desenvolvida com autenticação e autorização via JWT, utilizando Spr
 
 ```bash
 ./mvnw clean package
-No Windows: mvnw.cmd clean package
+```
 
-Isso irá gerar um arquivo .jar dentro da pasta target/.
+> No Windows:  
+> `mvnw.cmd clean package`
 
-🐳 Como rodar com Docker
-Certifique-se de ter um arquivo Dockerfile na raiz do projeto com o seguinte conteúdo:
+Isso gera o `.jar` em `target/`.
 
-Dockerfile
-Copiar
-Editar
+---
+
+## 🐳 Rodando com Docker
+
+### 1. Crie o `Dockerfile` na raiz do projeto:
+
+```Dockerfile
 FROM eclipse-temurin:17-jdk-alpine
 VOLUME /tmp
 ARG JAR_FILE=target/*.jar
 COPY ${JAR_FILE} app.jar
-ENTRYPOINT ["java","-jar","/app.jar"]
-Build da imagem:
+ENTRYPOINT ["java", "-jar", "/app.jar"]
+```
 
-bash
-Copiar
-Editar
+### 2. Build da imagem Docker:
+
+```bash
 docker build -t apijwt .
-Rode o container:
+```
 
-bash
-Copiar
-Editar
+### 3. Execute o container:
+
+```bash
 docker run -p 8080:8080 apijwt
-A aplicação estará disponível em: http://localhost:8080
+```
 
-📑 Endpoints principais
-Método	Endpoint	Descrição
-POST	/auth/login	Autentica e gera um JWT
-POST	/auth/register	Registra novo usuário
-GET	/auth/users	Lista todos os usuários
-DELETE	/auth/users/{id}	Remove um usuário
-GET	/actuator/health	Verifica status da API
-GET	/actuator/prometheus	Métricas para Prometheus
+Acesse a aplicação em:  
+👉 `http://localhost:8080`
 
-🛠️ Acesso ao H2
-URL: http://localhost:8080/h2-console
+---
 
-JDBC URL: jdbc:h2:file:./src/main/resources/db/bancoDeDados
+## 📑 Principais Endpoints
 
-Usuário: sa
+| Método | Endpoint             | Descrição                         | Acesso     |
+|--------|----------------------|-----------------------------------|------------|
+| POST   | `/auth/login`        | Autentica e retorna um JWT        | Público    |
+| POST   | `/auth/register`     | Cadastra novo usuário             | Público    |
+| GET    | `/auth/users`        | Lista usuários                    | ADMIN      |
+| DELETE | `/auth/users/{id}`   | Remove um usuário pelo ID         | ADMIN      |
+| GET    | `/protected`         | Endpoint protegido para testes    | USER/ADMIN |
+| GET    | `/actuator/health`   | Health Check                      | Público    |
+| GET    | `/actuator/prometheus` | Métricas Prometheus              | Público    |
 
-Senha: (vazia)
+---
 
-🔐 Exemplo de login no Swagger
-Acesse: http://localhost:8080/swagger-ui.html
+## 🔐 Login no Swagger
 
-Faça um POST em /auth/login com:
+1. Acesse: [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)  
+2. Faça um `POST` em `/auth/login` com:
 
-json
-Copiar
-Editar
+```json
 {
   "username": "admin",
   "password": "123"
 }
-Copie o token gerado e clique no botão "Authorize" no Swagger. Use:
+```
 
-php-template
-Copiar
-Editar
-Bearer <seu-token>
-📈 Monitoramento com Actuator + Prometheus
-Health Check:
-http://localhost:8080/actuator/health
+3. Copie o token JWT retornado.
+4. No Swagger, clique em "Authorize" e insira:
 
-Métricas Prometheus:
-http://localhost:8080/actuator/prometheus
-
-✅ Usuários padrão (DataInitializer)
-Username	Senha	Papel
-admin	123	ROLE_ADMIN
-user	123	ROLE_USER
-
-📝 Autor
-Richard Luiz
-
-Projeto acadêmico com Spring Boot, JWT, e Docker
-
-yaml
-Copiar
-Editar
+```
+Bearer SEU_TOKEN
+```
 
 ---
 
-Se quiser, posso criar esse arquivo e te enviar diretamente ou formatar para Visual Studio Code. Deseja isso?
+## 🛠️ Acesso ao H2 Database
+
+- URL: `http://localhost:8080/h2-console`  
+- JDBC URL: `jdbc:h2:file:./src/main/resources/db/bancoDeDados`  
+- Usuário: `sa`  
+- Senha: (vazio)
+
+---
+
+## 🧪 Usuários Criados (via DataInitializer)
+
+| Username | Senha | Papel      |
+|----------|-------|------------|
+| admin    | 123   | ROLE_ADMIN |
+| user     | 123   | ROLE_USER  |
+
+---
+
+## 📊 Monitoramento com Actuator & Prometheus
+
+- Verificar status da API:  
+  `http://localhost:8080/actuator/health`
+
+- Verificar métricas Prometheus:  
+  `http://localhost:8080/actuator/prometheus`
+
+---
+
+## 📝 Autor
+
+- **Richard Luiz**  
+- Projeto acadêmico com foco em autenticação JWT, segurança com Spring Security, métricas com Prometheus e deploy com Docker.
+
+---
